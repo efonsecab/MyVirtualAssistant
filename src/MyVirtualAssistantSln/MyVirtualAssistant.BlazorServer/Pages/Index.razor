@@ -1,7 +1,18 @@
 ﻿@page "/"
 
-<h3>Index</h3>
+<PageTitle>Index</PageTitle>
 
-@code {
+<LoadingIndicator IsLoading="IsBusy"></LoadingIndicator>
 
+<ul class="list-group">
+    @foreach (var singleChatMessage in this.ChatMessages)
+    {
+        <li class="list-group-item">@singleChatMessage.Role - @singleChatMessage.Content</li>
+    }
+</ul>
+
+@if (ShowListenButton)
+{
+    <button type="button" class="btn btn-primary" @onclick="OnListenButtonClickedAsync">Listen</button>
 }
+@Error

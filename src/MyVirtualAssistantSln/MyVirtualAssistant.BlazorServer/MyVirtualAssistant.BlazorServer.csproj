@@ -4,6 +4,14 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>eb65e6e1-8ac1-4d41-b1de-270c1c7dfb6d</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.5" />
+    <PackageReference Include="Blazored.Toast" Version="4.1.0" />
+    <PackageReference Include="Toolbelt.Blazor.SpeechRecognition" Version="0.0.4.6-alpha" />
+    <PackageReference Include="Toolbelt.Blazor.SpeechSynthesis" Version="10.0.0" />
+  </ItemGroup>
 
 </Project>

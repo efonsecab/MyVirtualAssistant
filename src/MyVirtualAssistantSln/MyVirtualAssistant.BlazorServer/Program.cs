@@ -1,8 +1,26 @@
+using Azure.AI.OpenAI;
+using Azure;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
+using Blazored.Toast;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddBlazoredToast();
+
+builder.Services.AddSpeechRecognition();
+builder.Services.AddSpeechSynthesis();
+
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+
+var azureOpenAIEndpoint = builder.Configuration["Azure:OpenAI:CompletionsDeployment:Endpoint"]!;
+var azureOpenAIKey = builder.Configuration["Azure:OpenAI:CompletionsDeployment:Key"]!;
+builder.Services.AddSingleton<OpenAIClient>((sp) =>
+{
+    return new OpenAIClient(endpoint: new Uri(azureOpenAIEndpoint),
+        keyCredential: new AzureKeyCredential(azureOpenAIKey));
+});
 
 var app = builder.Build();
 

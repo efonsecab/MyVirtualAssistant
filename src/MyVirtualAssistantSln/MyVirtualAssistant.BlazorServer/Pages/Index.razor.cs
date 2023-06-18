@@ -57,7 +57,12 @@ namespace MyVirtualAssistant.BlazorServer.Pages
                 StateHasChanged();
                 var chatCompletionsOptions = new ChatCompletionsOptions()
                 {
-                    MaxTokens = 8000,
+                    ChoicesPerPrompt = 1,
+                    FrequencyPenalty = 0,
+                    MaxTokens = 2000,
+                    NucleusSamplingFactor = 0.95f,
+                    PresencePenalty = 0,
+                    Temperature = 0.7f
                 };
                 foreach (var singleMessage in this.ChatMessages)
                 {
@@ -72,7 +77,7 @@ namespace MyVirtualAssistant.BlazorServer.Pages
                         chatCompletionsOptions);
                     foreach (var singleChoice in response.Value.Choices)
                     {
-                        this.ChatMessages.Add(new ChatMessage(ChatRole.System, singleChoice.Message.Content));
+                        this.ChatMessages.Add(new ChatMessage(ChatRole.Assistant, singleChoice.Message.Content));
                         StateHasChanged();
                         await this.SpeechSynthesis!.SpeakAsync(singleChoice.Message.Content);
                     }

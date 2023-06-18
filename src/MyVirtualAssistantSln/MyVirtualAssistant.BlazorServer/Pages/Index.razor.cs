@@ -17,36 +17,37 @@ namespace MyVirtualAssistant.BlazorServer.Pages
         private OpenAIClient? OpenAIClient { get; set; }
         [Inject]
         private IToastService? ToastService { get; set; }
-        private bool ShowListenButton { get; set; } = true;
         private string? Error { get; set; }
-        private bool IsBusy { get; set; } = false;
 
         private List<ChatMessage> ChatMessages = new List<ChatMessage>()
         {
             new ChatMessage(ChatRole.System, "You are a helpful assistant.")
         };
+        private bool IsBusy { get; set; }
 
-        protected override void OnInitialized()
+        protected override async void OnAfterRender(bool firstRender)
         {
-            this.SpeechRecognition!.Continuous = false;
-            this.SpeechRecognition!.Result += OnSpeechRecognized;
-            this.SpeechSynthesis!.UtteranceEnded += OnUtteranceEnded;
+            if (firstRender)
+            {
+                this.SpeechRecognition!.Continuous = true;
+                this.SpeechRecognition!.Result += OnSpeechRecognized;
+                this.SpeechSynthesis!.UtteranceEnded += OnUtteranceEnded;
+                await this.SpeechRecognition!.StartAsync();
+            }
         }
 
-        private void OnUtteranceEnded(object? sender, EventArgs e)
+
+        private async void OnUtteranceEnded(object? sender, EventArgs e)
         {
-            ShowListenButton = true;
+            this.IsBusy = false;
             StateHasChanged();
-        }
-
-        private async Task OnListenButtonClickedAsync()
-        {
             await this.SpeechRecognition!.StartAsync();
         }
 
         private async void OnSpeechRecognized(object? sender, SpeechRecognitionEventArgs e)
         {
-            ShowListenButton = false;
+            await this.SpeechRecognition!.StopAsync();
+            this.IsBusy = true;
             this.Error = string.Empty;
             StateHasChanged();
             foreach (var singleResult in e.Results)
@@ -70,7 +71,6 @@ namespace MyVirtualAssistant.BlazorServer.Pages
                 }
                 try
                 {
-                    IsBusy = true;
                     StateHasChanged();
                     Response<ChatCompletions> response = await this.OpenAIClient!.GetChatCompletionsAsync(
                         deploymentOrModelName: "video_gpt_35", chatCompletionsOptions:
@@ -88,11 +88,6 @@ namespace MyVirtualAssistant.BlazorServer.Pages
                     this.Error = ex.Message;
                     StateHasChanged();
                     await this.SpeechSynthesis!.SpeakAsync(this.Error);
-                }
-                finally
-                {
-                    IsBusy = false;
-                    StateHasChanged();
                 }
             }
         }

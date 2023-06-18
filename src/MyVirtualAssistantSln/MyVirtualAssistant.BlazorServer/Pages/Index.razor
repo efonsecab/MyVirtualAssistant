@@ -2,14 +2,13 @@
 
 <PageTitle>Index</PageTitle>
 
-<LoadingIndicator IsLoading="IsBusy"></LoadingIndicator>
-
 <ul class="list-group">
     @foreach (var singleChatMessage in this.ChatMessages)
     {
         <li class="list-group-item">@singleChatMessage.Role - @singleChatMessage.Content</li>
     }
 </ul>
+<LoadingIndicator IsLoading="IsBusy"></LoadingIndicator>
 
 @if (ShowListenButton)
 {
